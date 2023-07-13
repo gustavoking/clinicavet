@@ -1,9 +1,12 @@
+import { BrowserRouter } from "react-router-dom";
+import RoutesApp from "./routes";
+
 function App() {
   return (
     <>
-      <div>
-        <span>dsASDA</span>
-      </div>
+      <BrowserRouter>
+        <RoutesApp />
+      </BrowserRouter>
     </>
   );
 }
