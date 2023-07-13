@@ -2,7 +2,7 @@ function SignIn() {
   return (
     <>
       <div>
-        <span>Login</span>
+        <span>Loginss</span>
       </div>
     </>
   );
