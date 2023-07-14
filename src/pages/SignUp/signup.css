@@ -50,6 +50,7 @@ form h1 {
   padding: 10px;
   font-size: 15px;
   background-color: #fff;
+  width: 100%;
 }
 
 form button {
@@ -65,4 +66,10 @@ form button {
   margin: 1.5rem 0;
   color: #000;
   cursor: pointer;
+}
+
+.toLogin {
+  display: flex;
+  width: 100%;
+  justify-content: center;
 }
