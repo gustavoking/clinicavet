@@ -1,13 +1,26 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import "./signup.css";
 import { Link } from "react-router-dom";
+
+import { AuthContext } from "../../contexts/auth";
 
 import logoclinica from "../../assets/logoclinica.png";
 
 export default function SignUp() {
-  const [nome, setNome] = useState("");
+  const { signUp, loadingAuth } = useContext(AuthContext);
+
+  const [name, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    if (name !== "" && email !== "" && password !== "") {
+      await signUp(email, password, name);
+      alert("cadastrado com sucesso!");
+    }
+  }
 
   return (
     <div className="container-center">
@@ -16,12 +29,12 @@ export default function SignUp() {
           <img src={logoclinica} alt="Logo do sistema de chamados" />
         </div>
 
-        <form className="form">
+        <form onSubmit={handleSubmit} className="form">
           <h1>Cadastrar nova conta</h1>
           <input
             type="text"
             placeholder="nome"
-            value={nome}
+            value={name}
             onChange={(e) => setNome(e.target.value)}
           />
 
@@ -38,7 +51,9 @@ export default function SignUp() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit">Cadastrar</button>
+          <button type="submit">
+            {loadingAuth ? "Carregando..." : "Cadastrar"}
+          </button>
 
           <div className="toLogin">
             <Link to="/">Fazer login</Link>
