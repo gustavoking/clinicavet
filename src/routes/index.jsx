@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import Private from "./Private";
 import Profile from "../pages/Profile";
 import Animais from "../pages/Animais";
+import Edit from "../pages/Edit";
 
 function RoutesApp() {
   return (
@@ -34,6 +35,14 @@ function RoutesApp() {
         element={
           <Private>
             <Animais />
+          </Private>
+        }
+      />
+      <Route
+        path="/edit"
+        element={
+          <Private>
+            <Edit />
           </Private>
         }
       />

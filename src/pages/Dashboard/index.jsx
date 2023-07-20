@@ -1,22 +1,65 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/auth";
 
 import Header from "../../components/Header";
 import Title from "../../components/Title";
 import { FiPlus, FiMessageSquare, FiSearch, FiEdit2 } from "react-icons/fi";
-import { FaDog } from "react-icons/fa";
+import {
+  collection,
+  getDocs,
+  orderBy,
+  limit,
+  startAfter,
+  query,
+} from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
-import { Link } from "react-router-dom";
+import { FaDog } from "react-icons/fa";
+import { db } from "../../services/firebaseConnection";
+
+import { Link, Navigate } from "react-router-dom";
 
 import "./dashboard.css";
 
+const listRef = collection(db, "animais");
+
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  const [chamados, setChamados] = useState([]);
+
+  useEffect(() => {
+    async function loadAnimais() {
+      const querySnapshot = await getDocs(listRef).then((snapshot) => {
+        let lista = [];
+
+        snapshot.forEach((doc) => {
+          lista.push({
+            id: doc.id,
+            nome: doc.data().nome,
+            especie: doc.data().especie,
+            responsavel: doc.data().responsavel,
+          });
+        });
+
+        setChamados(lista);
+      });
+    }
+
+    loadAnimais();
+  }, []);
+
+  console.log(chamados);
+
   const { logout } = useContext(AuthContext);
 
   async function handleLogout() {
     await logout();
   }
 
+  function handleEdit(id) {
+    navigate(`/edit?id=${id}`);
+  }
   return (
     <div>
       <Header />
@@ -36,27 +79,26 @@ export default function Dashboard() {
                 <th scope="col"></th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td data-label="Cliente">Mercado Esquina</td>
-                <td data-label="Assunto">Suporte</td>
-                <td data-label="Cadastrado">12/05/2022</td>
-                <td data-label="#">
-                  <button
-                    className="action"
-                    style={{ backgroundColor: "#3583f6" }}
-                  >
-                    <FiSearch color="#FFF" size={17} />
-                  </button>
-                  <button
-                    className="action"
-                    style={{ backgroundColor: "#f6a935" }}
-                  >
-                    <FiEdit2 color="#FFF" size={17} />
-                  </button>
-                </td>
-              </tr>
-            </tbody>
+            {chamados.map((chamado) => {
+              return (
+                <tbody>
+                  <tr>
+                    <td data-label="Animal">{chamado.nome}</td>
+                    <td data-label="Especie">{chamado.especie}</td>
+                    <td data-label="Responsavel">{chamado.responsavel}</td>
+                    <td data-label="#">
+                      <button
+                        onClick={() => handleEdit(chamado.id)}
+                        className="action"
+                        style={{ backgroundColor: "#f6a935" }}
+                      >
+                        <FiEdit2 color="#FFF" size={17} />
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              );
+            })}
           </table>
         </>
       </div>

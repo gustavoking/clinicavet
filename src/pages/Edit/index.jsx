@@ -1,41 +1,62 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Title from "../../components/Title";
 
 import { FiUser } from "react-icons/fi";
 
 import { db } from "../../services/firebaseConnection";
-import { addDoc, collection } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
 
 import { toast } from "react-toastify";
 
-export default function Animais() {
+export default function Edit() {
   const [nome, setNome] = useState("");
   const [especie, setEspecie] = useState("");
   const [responsavel, setResponsavel] = useState("");
 
-  async function handleRegister(e) {
+  const params = new URLSearchParams(location.search);
+
+  const id = params.get("id");
+
+  const listRef = doc(db, "animais", id);
+
+  const [chamados, setChamados] = useState([]);
+
+  useEffect(() => {
+    async function loadAnimais() {
+      const querySnapshot = await getDocs(listRef).then((snapshot) => {
+        snapshot.forEach((doc) => {
+          console.log("dsadsa");
+          if (doc.id === id) {
+            setNome(doc.data().nome);
+            setEspecie(doc.data().especie);
+            setResponsavel(doc.data().responsavel);
+          }
+        });
+      });
+    }
+
+    loadAnimais();
+  }, []);
+
+  console.log(nome);
+
+  async function handleUpdate(e) {
+    const listRefUpdate = doc(db, "animais", id);
+
     e.preventDefault();
 
-    if (nome !== "" && especie !== "" && responsavel !== "") {
-      await addDoc(collection(db, "animais"), {
-        nome: nome,
-        especie: especie,
-        responsavel: responsavel,
-      })
-        .then(() => {
-          setNome("");
-          setEspecie("");
-          setResponsavel("");
-          toast.success("Animal cadastrado");
-        })
-        .catch((error) => {
-          console.log(error);
-          toast.error("Erro ao fazer o cadastro.");
-        });
-    } else {
-      toast.error("Preencha todos os campos!");
-    }
+    await updateDoc(listRefUpdate, {
+      nome: nome,
+      especie: especie,
+      responsavel: responsavel,
+    }).then(() => {
+      setNome("");
+      setEspecie("");
+      setResponsavel("");
+      toast.success("Animal Atualizado");
+    });
+    return;
   }
 
   return (
@@ -48,7 +69,7 @@ export default function Animais() {
         </Title>
 
         <div className="container">
-          <form className="form-profile" onSubmit={handleRegister}>
+          <form className="form-profile">
             <label>Nome</label>
             <input
               type="text"
@@ -73,8 +94,8 @@ export default function Animais() {
               onChange={(e) => setResponsavel(e.target.value)}
             />
 
-            <button type="submit" onSubmit={handleRegister}>
-              Salvar
+            <button type="submit" onClick={(e) => handleUpdate(e)}>
+              Atualizar dados
             </button>
           </form>
         </div>
