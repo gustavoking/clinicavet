@@ -18,7 +18,6 @@ export default function SignUp() {
 
     if (name !== "" && email !== "" && password !== "") {
       await signUp(email, password, name);
-      alert("cadastrado com sucesso!");
     }
   }
 
